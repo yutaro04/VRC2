@@ -1,1 +1,2 @@
 # VRC2
+VRChatCalendar：VRChat内でのイベントを管理するWebアプリケーション
