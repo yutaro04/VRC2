@@ -1,0 +1,218 @@
+openapi: 3.0.3
+info:
+  title: VRChat Calendar API
+  description: イベント募集Webアプリケーション用のREST API
+  version: 1.0.0
+servers:
+  - url: http://localhost:3000/api
+    description: ローカル開発環境
+  - url: https://api.vrchat-calendar.example.com
+    description: 本番環境
+
+paths:
+  /events:
+    post:
+      summary: イベント投稿
+      description: 新しいイベントを投稿します
+      tags:
+        - Events
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - posterId
+                - title
+                - text
+                - device
+                - maxParticipants
+                - eventDates
+              properties:
+                posterId:
+                  type: string
+                  description: 投稿者ID
+                  example: "user_12345"
+                title:
+                  type: string
+                  description: イベントのタイトル
+                  minLength: 1
+                  maxLength: 100
+                  example: "VRChatでのお花見イベント"
+                text:
+                  type: string
+                  description: イベントの詳細説明
+                  minLength: 1
+                  maxLength: 2000
+                  example: "桜の季節にVRChatワールドでお花見を楽しみましょう！初心者歓迎です。"
+                image:
+                  type: string
+                  format: binary
+                  description: イベント画像（1枚）
+                device:
+                  type: string
+                  description: 対応デバイス
+                  enum:
+                    - PC
+                    - Android
+                  example: "PC"
+                maxParticipants:
+                  type: integer
+                  description: 最大参加人数
+                  minimum: 1
+                  maximum: 1000
+                  example: 20
+                eventDates:
+                  type: array
+                  description: イベント開催日（連続可能な日程を複数持てる）
+                  minItems: 1
+                  items:
+                    type: object
+                    required:
+                      - startDateTime
+                      - endDateTime
+                    properties:
+                      startDateTime:
+                        type: string
+                        format: date-time
+                        description: イベント開始日時
+                        example: "2025-04-05T18:00:00+09:00"
+                      endDateTime:
+                        type: string
+                        format: date-time
+                        description: イベント終了日時
+                        example: "2025-04-05T20:00:00+09:00"
+      responses:
+        '201':
+          description: イベントが正常に作成されました
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: integer
+                    example: 201
+                  message:
+                    type: string
+                    example: "イベントが正常に作成されました"
+                  data:
+                    type: object
+                    properties:
+                      eventId:
+                        type: string
+                        description: 作成されたイベントのID
+                        example: "event_67890"
+        '400':
+          description: リクエストが不正です
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: integer
+                    example: 400
+                  message:
+                    type: string
+                    example: "リクエストパラメータが不正です"
+                  errors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        field:
+                          type: string
+                          example: "title"
+                        message:
+                          type: string
+                          example: "タイトルは必須です"
+        '401':
+          description: 認証エラー
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: integer
+                    example: 401
+                  message:
+                    type: string
+                    example: "認証が必要です"
+        '413':
+          description: ファイルサイズが大きすぎます
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: integer
+                    example: 413
+                  message:
+                    type: string
+                    example: "画像ファイルのサイズが上限を超えています（最大5MB）"
+        '500':
+          description: サーバーエラー
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: integer
+                    example: 500
+                  message:
+                    type: string
+                    example: "サーバー内部エラーが発生しました"
+
+components:
+  schemas:
+    Event:
+      type: object
+      properties:
+        id:
+          type: string
+          description: イベントID
+        posterId:
+          type: string
+          description: 投稿者ID
+        title:
+          type: string
+          description: イベントのタイトル
+        text:
+          type: string
+          description: イベントの詳細説明
+        imageUrl:
+          type: string
+          description: イベント画像のURL
+        device:
+          type: string
+          enum:
+            - PC
+            - Android
+          description: 対応デバイス
+        maxParticipants:
+          type: integer
+          description: 最大参加人数
+        eventDates:
+          type: array
+          items:
+            type: object
+            properties:
+              startDateTime:
+                type: string
+                format: date-time
+              endDateTime:
+                type: string
+                format: date-time
+        createdAt:
+          type: string
+          format: date-time
+          description: 作成日時
+        updatedAt:
+          type: string
+          format: date-time
+          description: 更新日時
