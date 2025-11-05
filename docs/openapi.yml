@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: VRChat Calendar API
-  description: CRChatイベント募集Webアプリケーション用のREST API
+  description: VRChatイベント募集Webアプリケーション用のREST API
   version: 1.0.0
 servers:
   - url: http://localhost:3000/api
