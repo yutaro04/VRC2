@@ -2,8 +2,7 @@ import Link from "next/link";
 import ROUTES from "../lib/routes";
 import { FloatingNav } from "../components/shared/FloatingNav";
 import { EventCard } from "../components/features/events/EventCard";
-import HeroSection from "../components/shared/VRChatEventsLogo";
-import { BackgroundPattern } from "../components/shared/BackgroundPattern";
+
 
 interface Event {
   id: string | number;
@@ -145,13 +144,11 @@ const newEvents: Event[] = [
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-white relative flex flex-col">
-      <BackgroundPattern />
+    <div className="min-h-screen bg-transparent relative flex flex-col">
 
       <FloatingNav />
 
       <main className="relative z-10 flex-1 pb-24 lg:pb-0">
-        <HeroSection />
 
         <div className="py-12 max-w-[1400px] mx-auto px-8">
           <div className="bg-gray-900 rounded-lg p-6 border-2 border-gray-900">
