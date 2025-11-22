@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { Monitor, Smartphone, ChevronLeft, ChevronRight, Image as ImageIcon } from "lucide-react";
+import { Monitor, Smartphone, ChevronLeft, ChevronRight, Image as ImageIcon, Clock } from "lucide-react";
 
 interface Event {
   id: string | number;
@@ -555,8 +555,8 @@ export default function SearchPage() {
   };
 
   const getDeviceIcon = (device: 'PC' | 'All' | 'Android') => {
-    if (device === 'PC') return <Monitor className="w-3 h-3" />;
-    if (device === 'Android') return <Smartphone className="w-3 h-3" />;
+    if (device === 'PC') return <Monitor className="w-3 h-3" aria-hidden="true" />;
+    if (device === 'Android') return <Smartphone className="w-3 h-3" aria-hidden="true" />;
     return <span className="text-xs">ALL</span>;
   };
 
@@ -595,8 +595,9 @@ export default function SearchPage() {
             <button
               onClick={handlePrevWeek}
               className="px-3 py-3 bg-white border-2 border-gray-900 rounded-lg hover:bg-gray-100 transition-all"
+              aria-label="前の週"
             >
-              <ChevronLeft className="w-5 h-5" />
+              <ChevronLeft className="w-5 h-5" aria-hidden="true" />
             </button>
             
             <div className="flex gap-2">
@@ -619,8 +620,9 @@ export default function SearchPage() {
             <button
               onClick={handleNextWeek}
               className="px-3 py-3 bg-white border-2 border-gray-900 rounded-lg hover:bg-gray-100 transition-all"
+              aria-label="次の週"
             >
-              <ChevronRight className="w-5 h-5" />
+              <ChevronRight className="w-5 h-5" aria-hidden="true" />
             </button>
           </div>
 
@@ -677,7 +679,7 @@ export default function SearchPage() {
                                       <div className="flex items-stretch h-full w-full">
                                         {/* Poster Image (Dummy) */}
                                         <div className="w-40 flex-shrink-0 bg-gray-200 aspect-[4/5] flex items-center justify-center">
-                                          <ImageIcon className="w-12 h-12 text-gray-400" />
+                                          <ImageIcon className="w-12 h-12 text-gray-400" aria-hidden="true" />
                                         </div>
                                         {/* Event Info */}
                                         <div className="flex-1 p-3 flex flex-col justify-between bg-white relative">
@@ -693,9 +695,7 @@ export default function SearchPage() {
                                           </div>
                                           
                                           <div className="flex items-center gap-1.5 text-xs text-gray-500">
-                                            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                            </svg>
+                                            <Clock className="w-3 h-3" aria-hidden="true" />
                                             <span>{event.startTime} - {event.endTime}</span>
                                           </div>
                                         </div>
