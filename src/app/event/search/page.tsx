@@ -512,6 +512,7 @@ const timeSlots = Array.from({ length: 48 }, (_, i) => {
 export default function SearchPage() {
   const [selectedDay, setSelectedDay] = useState<number>(1); // Default to Monday
   const [weekOffset, setWeekOffset] = useState<number>(0); // Week offset (0 = current week)
+  const [selectedEvent, setSelectedEvent] = useState<Event | null>(null); // For event details modal
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   
   // Calculate current date with week offset
@@ -541,6 +542,14 @@ export default function SearchPage() {
 
   const handleNextWeek = () => {
     setWeekOffset(weekOffset + 1);
+  };
+
+  const handleEventClick = (event: Event) => {
+    setSelectedEvent(event);
+  };
+
+  const closeEventDetails = () => {
+    setSelectedEvent(null);
   };
 
   const getDeviceIcon = (device: 'PC' | 'All' | 'Android') => {
@@ -639,14 +648,15 @@ export default function SearchPage() {
                         {/* Event Area */}
                         <div className="flex-1 p-2 min-h-[160px] flex items-center">
                           {eventsAtThisTime.length > 0 ? (
-                            <div className="w-full space-y-2">
+                                <div className="w-full space-y-2">
                               {eventsAtThisTime.map((event) => {
                                 // Only show the event card at its start time
                                 if (event.startTime === time) {
                                   return (
-                                    <div
+                                    <button
                                       key={event.id}
-                                      className="bg-white border-2 border-gray-900 rounded-lg overflow-hidden hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all cursor-pointer group flex max-w-lg"
+                                      onClick={() => handleEventClick(event)}
+                                      className="bg-white border-2 border-gray-900 rounded-lg overflow-hidden hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all cursor-pointer group flex max-w-lg w-full text-left"
                                     >
                                       <div className="flex items-stretch h-full w-full">
                                         {/* Poster Image (Dummy) */}
@@ -678,7 +688,7 @@ export default function SearchPage() {
                                           </div>
                                         </div>
                                       </div>
-                                    </div>
+                                    </button>
                                   );
                                 }
                                 return null;
@@ -723,6 +733,119 @@ export default function SearchPage() {
           </div>
         </div>
       </main>
+
+      {/* Event Details Modal */}
+      {selectedEvent && (
+        <div 
+          className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
+          onClick={closeEventDetails}
+        >
+          <div 
+            className="bg-white border-2 border-gray-900 rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Modal Header */}
+            <div className="sticky top-0 bg-gray-900 text-white p-4 flex justify-between items-center z-10">
+              <h2 className="text-xl font-bold">イベント詳細</h2>
+              <button
+                onClick={closeEventDetails}
+                className="text-white hover:text-gray-300 transition-colors"
+                aria-label="閉じる"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            {/* Modal Content */}
+            <div className="p-6">
+              {/* Event Image */}
+              <div className="w-full aspect-video bg-gray-200 rounded-lg overflow-hidden mb-6">
+                {selectedEvent.image ? (
+                  <img 
+                    src={selectedEvent.image} 
+                    alt={selectedEvent.title} 
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center">
+                    <ImageIcon className="w-16 h-16 text-gray-400" />
+                  </div>
+                )}
+              </div>
+
+              {/* Event Title */}
+              <h3 className="text-2xl font-bold text-gray-900 mb-4">
+                {selectedEvent.title}
+              </h3>
+
+              {/* Event Info Grid */}
+              <div className="grid grid-cols-2 gap-4 mb-6">
+                {/* Time */}
+                <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                  <div className="text-xs text-gray-500 mb-1">時間</div>
+                  <div className="flex items-center gap-2 text-gray-900">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <span>{selectedEvent.startTime} - {selectedEvent.endTime}</span>
+                  </div>
+                </div>
+
+                {/* Day */}
+                <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                  <div className="text-xs text-gray-500 mb-1">曜日</div>
+                  <div className="flex items-center gap-2 text-gray-900">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                    <span>{daysOfWeek[selectedEvent.day]}曜日</span>
+                  </div>
+                </div>
+
+                {/* Organizer */}
+                <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                  <div className="text-xs text-gray-500 mb-1">主催者</div>
+                  <div className="flex items-center gap-2 text-gray-900">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                    </svg>
+                    <span>{selectedEvent.organizer}</span>
+                  </div>
+                </div>
+
+                {/* Device */}
+                <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                  <div className="text-xs text-gray-500 mb-1">対応デバイス</div>
+                  <div className="flex items-center gap-2 text-gray-900">
+                    {getDeviceIcon(selectedEvent.device)}
+                    <span>{selectedEvent.device === 'PC' ? 'PC専用' : selectedEvent.device === 'Android' ? 'Android専用' : '全デバイス対応'}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Description */}
+              <div className="mb-6">
+                <h4 className="text-sm font-bold text-gray-900 mb-2">イベント詳細</h4>
+                <p className="text-gray-700 leading-relaxed">
+                  {selectedEvent.description}
+                </p>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex gap-3">
+                <button className="flex-1 bg-gray-900 text-white py-3 px-6 rounded-lg border-2 border-gray-900 hover:bg-gray-800 transition-all font-medium">
+                  参加する
+                </button>
+                <button className="flex-1 bg-white text-gray-900 py-3 px-6 rounded-lg border-2 border-gray-900 hover:bg-gray-50 transition-all font-medium">
+                  詳細を見る
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Footer */}
       <footer className="relative px-8 py-8 z-10">
