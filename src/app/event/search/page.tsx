@@ -650,8 +650,12 @@ export default function SearchPage() {
                                     >
                                       <div className="flex items-stretch h-full w-full">
                                         {/* Poster Image (Dummy) */}
-                                        <div className="w-40 flex-shrink-0 bg-gray-200 aspect-[4/5] flex items-center justify-center">
-                                          <ImageIcon className="w-12 h-12 text-gray-400" />
+                                        <div className="w-40 flex-shrink-0 bg-gray-200 aspect-[4/5] relative overflow-hidden flex items-center justify-center">
+                                          {event.image ? (
+                                            <img src={event.image} alt={event.title} className="w-full h-full object-cover" />
+                                          ) : (
+                                            <ImageIcon className="w-12 h-12 text-gray-400" />
+                                          )}
                                         </div>
                                         {/* Event Info */}
                                         <div className="flex-1 p-3 flex flex-col justify-between bg-white relative">
