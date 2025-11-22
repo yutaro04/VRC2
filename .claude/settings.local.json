@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(claude mcp add:*)",
+      "mcp__figma__get_metadata",
+      "mcp__figma__whoami",
+      "mcp__figma__get_design_context",
+      "mcp__figma__get_screenshot"
+    ],
+    "deny": []
+  }
+}
