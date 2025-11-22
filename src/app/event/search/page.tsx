@@ -496,16 +496,27 @@ const weekEvents: Event[] = [
 
 const daysOfWeek = ["日", "月", "火", "水", "木", "金", "土"];
 
+const DAYS_IN_WEEK = 7;
+const TIME_SLOT_MINUTES = 30;
+const MINUTES_IN_HOUR = 60;
+const HOURS_IN_DAY = 24;
+const SLOTS_PER_HOUR = MINUTES_IN_HOUR / TIME_SLOT_MINUTES;
+const TOTAL_SLOTS = HOURS_IN_DAY * SLOTS_PER_HOUR;
+
+const CALENDAR_MAX_HEIGHT = 600;
+const EVENT_MIN_HEIGHT = 160;
+const CONTAINER_MAX_WIDTH = 1400;
+
 // Convert time string to minutes from midnight
 function timeToMinutes(time: string): number {
   const [hours, minutes] = time.split(":").map(Number);
-  return hours * 60 + minutes;
+  return hours * MINUTES_IN_HOUR + minutes;
 }
 
 // Generate time slots (every 30 minutes)
-const timeSlots = Array.from({ length: 48 }, (_, i) => {
-  const hour = Math.floor(i / 2);
-  const minute = (i % 2) * 30;
+const timeSlots = Array.from({ length: TOTAL_SLOTS }, (_, i) => {
+  const hour = Math.floor(i / SLOTS_PER_HOUR);
+  const minute = (i % SLOTS_PER_HOUR) * TIME_SLOT_MINUTES;
   return `${hour.toString().padStart(2, "0")}:${minute.toString().padStart(2, "0")}`;
 });
 
@@ -518,7 +529,7 @@ export default function SearchPage() {
   const getCurrentWeekStart = () => {
     const today = new Date();
     const dayOfWeek = today.getDay();
-    const diff = today.getDate() - dayOfWeek + (weekOffset * 7);
+    const diff = today.getDate() - dayOfWeek + (weekOffset * DAYS_IN_WEEK);
     const weekStart = new Date(today);
     weekStart.setDate(diff);
     return weekStart;
@@ -575,7 +586,10 @@ export default function SearchPage() {
       <main className="relative z-10 flex-1 pb-24 lg:pb-8">
 
         {/* Search Content */}
-        <div className="pt-16 pb-8 max-w-[1400px] mx-auto px-8">
+        <div 
+          className="pt-16 pb-8 mx-auto px-8"
+          style={{ maxWidth: CONTAINER_MAX_WIDTH }}
+        >
           {/* Day Selector */}
           <div className="flex items-center justify-center gap-2 mb-8">
             <button
@@ -616,7 +630,8 @@ export default function SearchPage() {
               {/* Time Slots */}
               <div 
                 ref={scrollContainerRef}
-                className="flex-1 overflow-y-auto max-h-[600px] scrollbar-thin relative"
+                className="flex-1 overflow-y-auto scrollbar-thin relative"
+                style={{ maxHeight: CALENDAR_MAX_HEIGHT }}
               >
                 {timeSlots.map((time) => {
                   const eventsAtThisTime = selectedDayEvents.filter(event => {
@@ -637,7 +652,10 @@ export default function SearchPage() {
                         </div>
 
                         {/* Event Area */}
-                        <div className="flex-1 p-2 min-h-[160px] flex items-center">
+                        <div 
+                          className="flex-1 p-2 flex items-center"
+                          style={{ minHeight: EVENT_MIN_HEIGHT }}
+                        >
                           {eventsAtThisTime.length > 0 ? (
                             <div className="w-full space-y-2">
                               {eventsAtThisTime.map((event) => {
@@ -650,12 +668,8 @@ export default function SearchPage() {
                                     >
                                       <div className="flex items-stretch h-full w-full">
                                         {/* Poster Image (Dummy) */}
-                                        <div className="w-40 flex-shrink-0 bg-gray-200 aspect-[4/5] relative overflow-hidden flex items-center justify-center">
-                                          {event.image ? (
-                                            <img src={event.image} alt={event.title} className="w-full h-full object-cover" />
-                                          ) : (
-                                            <ImageIcon className="w-12 h-12 text-gray-400" />
-                                          )}
+                                        <div className="w-40 flex-shrink-0 bg-gray-200 aspect-[4/5] flex items-center justify-center">
+                                          <ImageIcon className="w-12 h-12 text-gray-400" />
                                         </div>
                                         {/* Event Info */}
                                         <div className="flex-1 p-3 flex flex-col justify-between bg-white relative">
@@ -698,7 +712,10 @@ export default function SearchPage() {
               </div>
 
               {/* Time Jump Navigation */}
-              <div className="w-24 border-l-2 border-gray-900 bg-gray-50 overflow-y-auto max-h-[600px] scrollbar-thin">
+              <div 
+                className="w-24 border-l-2 border-gray-900 bg-gray-50 overflow-y-auto scrollbar-thin"
+                style={{ maxHeight: CALENDAR_MAX_HEIGHT }}
+              >
                 <div className="sticky top-0 bg-gray-900 text-white text-xs p-2 text-center z-10">
                   時刻選択
                 </div>
