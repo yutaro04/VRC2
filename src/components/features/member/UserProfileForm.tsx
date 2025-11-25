@@ -4,7 +4,7 @@ import Image from 'next/image';
 
 interface UserData {
   nickname: string;
-  bio: string;
+  description: string;
   email: string;
   password: string;
 }
@@ -21,7 +21,7 @@ interface UserProfileFormProps {
 const UserProfileForm: React.FC<UserProfileFormProps> = ({
   userData,
   isEditing = false,
-  title = "プロフィール情報",
+  title = 'プロフィール情報',
   onInputChange,
   headerButton,
   actionButtons,
@@ -52,9 +52,7 @@ const UserProfileForm: React.FC<UserProfileFormProps> = ({
         <div className="max-w-4xl mx-auto">
           {/* Header Section */}
           <div className="mb-6">
-            <h1 className="text-2xl font-medium text-gray-900 mb-1">
-              {isEditing ? 'アカウント設定' : '会員詳細'}
-            </h1>
+            <h1 className="text-2xl font-medium text-gray-900 mb-1">{isEditing ? 'アカウント設定' : '会員詳細'}</h1>
             <p className="text-gray-600 text-base">
               {isEditing ? 'プロフィール情報の編集ができます' : 'プロフィール情報の確認と編集ができます'}
             </p>
@@ -78,12 +76,12 @@ const UserProfileForm: React.FC<UserProfileFormProps> = ({
               {/* Avatar and Nickname Row */}
               <div className="flex items-center gap-6 border-b-2 border-gray-200 pb-6 mb-4">
                 <div className="w-20 h-20 bg-gray-200 rounded-full border-4 border-gray-900 overflow-hidden flex-shrink-0">
-                  <Image 
-                    src="/api/placeholder/80/80" 
-                    alt="プロフィール写真" 
+                  <Image
+                    src="/api/placeholder/80/80"
+                    alt="プロフィール写真"
                     width={80}
                     height={80}
-                    className="w-full h-full object-cover" 
+                    className="w-full h-full object-cover"
                   />
                 </div>
                 <div className="flex-1">
@@ -103,19 +101,19 @@ const UserProfileForm: React.FC<UserProfileFormProps> = ({
                 </div>
               </div>
 
-              {/* Bio Section */}
+              {/* Description Section */}
               <div className="mb-4">
                 <label className="block text-sm font-normal text-gray-600 mb-1">自己紹介文</label>
                 {isEditing ? (
                   <textarea
                     rows={3}
-                    value={userData.bio}
-                    onChange={e => handleInputChange('bio', e.target.value)}
+                    value={userData.description}
+                    onChange={e => handleInputChange('description', e.target.value)}
                     className="w-full px-3.5 py-2.5 bg-gray-50 border-2 border-gray-200 rounded text-base text-gray-900 focus:outline-none focus:border-gray-900 resize-none"
                   />
                 ) : (
                   <div className="px-3.5 py-2.5 bg-gray-50 border-2 border-gray-200 rounded text-base text-gray-900">
-                    {userData.bio}
+                    {userData.description}
                   </div>
                 )}
               </div>
@@ -178,11 +176,7 @@ const UserProfileForm: React.FC<UserProfileFormProps> = ({
           </div>
 
           {/* Action Buttons */}
-          {actionButtons && (
-            <div className="flex justify-end gap-4 mt-4">
-              {actionButtons}
-            </div>
-          )}
+          {actionButtons && <div className="flex justify-end gap-4 mt-4">{actionButtons}</div>}
         </div>
       </div>
     </div>

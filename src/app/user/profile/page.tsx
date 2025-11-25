@@ -1,15 +1,62 @@
 'use client';
 import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 import UserProfileForm from '@/components/features/member/UserProfileForm';
+
+interface UserData {
+  nickname: string;
+  description: string;
+  email: string;
+  password: string;
+}
 
 export default function UserProfilePage() {
   const router = useRouter();
-  const userData = {
-    nickname: 'VRChatユーザー',
-    bio: 'VRChatで色々なイベントに参加しています。音楽イベントやアート展示が好きです。よろしくお願いします！',
-    email: 'user@example.com',
-    password: '********',
-  };
+  const [userData, setUserData] = useState<UserData | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const response = await fetch('/api/users/me');
+        const result = await response.json();
+
+        if (!response.ok) {
+          throw new Error(result.message || 'ユーザー情報の取得に失敗しました');
+        }
+
+        setUserData({
+          nickname: result.data.nickname,
+          description: result.data.description,
+          email: result.data.email,
+          password: '********', // パスワードは表示用にマスク
+        });
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'エラーが発生しました');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchUserData();
+  }, []);
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-gray-600">読み込み中...</div>
+      </div>
+    );
+  }
+
+  if (error || !userData) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-red-600">{error || 'ユーザー情報が見つかりません'}</div>
+      </div>
+    );
+  }
 
   const editButton = (
     <button
