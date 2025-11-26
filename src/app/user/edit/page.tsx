@@ -1,42 +1,63 @@
 'use client';
-import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useUser } from '@/hooks/useUser';
+import { useUserUpdate } from '@/hooks/useUserUpdate';
+import { useUserForm } from '@/hooks/useUserForm';
+import { LoadingSpinner } from '@/components/shared/LoadingSpinner';
+import { ErrorMessage } from '@/components/shared/ErrorMessage';
+import { EditActions } from '@/components/features/member/EditActions';
 import UserProfileForm from '@/components/features/member/UserProfileForm';
+import type { UpdateUserRequest } from '@/types/user';
 
 export default function UserEditPage() {
   const router = useRouter();
-  const [formData, setFormData] = useState({
-    nickname: 'VRChatユーザー',
-    bio: 'VRChatで色々なイベントに参加しています。音楽イベントやアート展示が好きです。よろしくお願いします！',
-    email: 'user@example.com',
-    password: '********',
-  });
+  const { user, isLoading, error: fetchError } = useUser();
+  const { updateUserData, isUpdating, error: updateError } = useUserUpdate();
+  const { formData, handleInputChange } = useUserForm({ initialUser: user });
 
-  const handleInputChange = (field: keyof typeof formData, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+  const handleSave = async () => {
+    try {
+      const updateData: UpdateUserRequest = {
+        nickname: formData.nickname,
+      };
+
+      // descriptionが空でない場合のみ送信
+      if (formData.description && formData.description.trim() !== '') {
+        updateData.description = formData.description;
+      }
+
+      // emailが空でない場合のみ送信
+      if (formData.email && formData.email.trim() !== '') {
+        updateData.email = formData.email;
+      }
+
+      // パスワードが入力されている場合のみ送信
+      if (formData.password && formData.password.trim() !== '') {
+        updateData.password = formData.password;
+      }
+
+      // アバター画像が変更されている場合のみ送信
+      if (formData.avatar_image_url) {
+        updateData.avatar_image_url = formData.avatar_image_url;
+      }
+
+      await updateUserData(updateData);
+      router.push('/user/profile');
+    } catch (err) {
+      // エラーはuseUserUpdateフックで管理される
+      console.error('Failed to update user:', err);
+    }
   };
 
-  const handleSave = () => {
-    console.log('保存:', formData);
-    router.push('/user/profile');
-  };
+  if (isLoading) {
+    return <LoadingSpinner />;
+  }
 
-  const actionButtons = (
-    <>
-      <button
-        onClick={() => router.push('/user/profile')}
-        className="px-4 py-2.5 bg-white border-2 border-gray-900 rounded-lg text-base font-normal text-gray-900 hover:bg-gray-50 transition-colors"
-      >
-        キャンセル
-      </button>
-      <button
-        onClick={handleSave}
-        className="px-4 py-2.5 bg-gray-900 border-2 border-gray-900 rounded-lg text-base font-normal text-white hover:bg-gray-800 transition-colors"
-      >
-        保存
-      </button>
-    </>
-  );
+  if (fetchError || !user) {
+    return <ErrorMessage message={fetchError || 'ユーザー情報が見つかりません'} />;
+  }
+
+  const actionButtons = <EditActions onSave={handleSave} isSaving={isUpdating} error={updateError} />;
 
   return (
     <UserProfileForm

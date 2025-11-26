@@ -30,6 +30,11 @@ components:
           type: string
           description: 自己紹介
           example: "VRChat初心者です。よろしくお願いします！"
+        email:
+          type: string
+          format: email
+          description: メールアドレス
+          example: "user@example.com"
         avatar_image_url:
           type: string
           description: アバター画像URL
@@ -184,6 +189,11 @@ paths:
                   minLength: 8
                   description: パスワード
                   example: "password123"
+                email:
+                  type: string
+                  format: email
+                  description: メールアドレス
+                  example: "user@example.com"
                 description:
                   type: string
                   description: 自己紹介
@@ -363,6 +373,11 @@ paths:
                   type: string
                   description: 自己紹介
                   example: "VRChat初心者です"
+                email:
+                  type: string
+                  format: email
+                  description: メールアドレス
+                  example: "user@example.com"
                 avatar_image_url:
                   type: string
                   description: アバター画像URL
