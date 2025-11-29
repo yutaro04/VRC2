@@ -25,6 +25,7 @@ export function useUserForm({ initialUser }: UseUserFormProps = {}): UseUserForm
         description: initialUser.description ?? '',
         email: initialUser.email ?? '',
         password: '', // 編集画面ではパスワードを空にする
+        avatar_image_url: initialUser.avatar_image_url,
       };
     }
     return {
@@ -32,6 +33,7 @@ export function useUserForm({ initialUser }: UseUserFormProps = {}): UseUserForm
       description: '',
       email: '',
       password: '',
+      avatar_image_url: undefined,
     };
   }, [initialUser]);
 
@@ -53,6 +55,7 @@ export function useUserForm({ initialUser }: UseUserFormProps = {}): UseUserForm
         description: initialUser.description ?? '',
         email: initialUser.email ?? '',
         password: '',
+        avatar_image_url: initialUser.avatar_image_url,
       });
     }
   };

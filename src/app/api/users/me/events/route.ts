@@ -3,10 +3,12 @@
  */
 
 import { NextRequest } from 'next/server';
+import { auth } from '@/auth';
 import * as eventRepository from '@/repositories/eventRepository';
 import {
   successResponse,
   serverErrorResponse,
+  unauthorizedResponse,
 } from '@/lib/api/apiResponse';
 
 /**
@@ -15,17 +17,14 @@ import {
  */
 export async function GET(request: NextRequest) {
   try {
-    // TODO: 実際の認証チェックを実装
-    // const token = request.headers.get('authorization');
-    // if (!token) {
-    //   return unauthorizedResponse();
-    // }
+    // NextAuthセッションからユーザー情報を取得
+    const session = await auth();
 
-    // TODO: JWTトークンからユーザーIDを取得
-    // const userId = verifyToken(token);
+    if (!session?.user?.id) {
+      return unauthorizedResponse('ログインが必要です');
+    }
 
-    // 仮のユーザーID（実装時はトークンから取得）
-    const userId = 16;
+    const userId = parseInt(session.user.id, 10);
 
     const searchParams = request.nextUrl.searchParams;
     const status = searchParams.get('status') ?? undefined;

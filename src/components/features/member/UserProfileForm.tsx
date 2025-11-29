@@ -1,12 +1,13 @@
 'use client';
 import React from 'react';
-import { CldImage } from 'next-cloudinary';
+import { CldImage, CldUploadWidget } from 'next-cloudinary';
 
 interface UserData {
   nickname: string;
   description: string;
   email: string;
   password: string;
+  avatar_image_url?: string;
 }
 
 interface UserProfileFormProps {
@@ -62,14 +63,57 @@ const UserProfileForm: React.FC<UserProfileFormProps> = ({
             <div className="p-6">
               {/* Avatar and Nickname Row */}
               <div className="flex items-center gap-6 border-b-2 border-gray-200 pb-6 mb-4">
-                <div className="w-20 h-20 bg-gray-200 rounded-full border-4 border-gray-900 overflow-hidden flex-shrink-0">
-                  <CldImage
-                    src="samples/animals/three-dogs"
-                    alt="プロフィール写真"
-                    width={80}
-                    height={80}
-                    className="w-full h-full object-cover"
-                  />
+                <div className="relative w-20 h-20 bg-gray-200 rounded-full border-4 border-gray-900 overflow-hidden flex-shrink-0">
+                  {userData.avatar_image_url ? (
+                    // Cloudinaryの画像かどうかを判定
+                    userData.avatar_image_url.startsWith('http') ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={userData.avatar_image_url}
+                        alt="プロフィール写真"
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <CldImage
+                        src={userData.avatar_image_url}
+                        alt="プロフィール写真"
+                        width={80}
+                        height={80}
+                        crop="fill"
+                        gravity="face"
+                        className="w-full h-full object-cover"
+                      />
+                    )
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center bg-gray-300">
+                      <svg className="w-10 h-10 text-gray-500" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
+                      </svg>
+                    </div>
+                  )}
+                  {isEditing && (
+                    <CldUploadWidget
+                      uploadPreset="user_avatars"
+                      onSuccess={(result) => {
+                        if (result.event === 'success' && typeof result.info === 'object' && result.info && 'secure_url' in result.info) {
+                          handleInputChange('avatar_image_url', result.info.public_id || '');
+                        }
+                      }}
+                    >
+                      {({ open }) => (
+                        <button
+                          type="button"
+                          onClick={() => open()}
+                          className="absolute inset-0 bg-black bg-opacity-50 opacity-0 hover:opacity-100 transition-opacity flex items-center justify-center"
+                        >
+                          <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                          </svg>
+                        </button>
+                      )}
+                    </CldUploadWidget>
+                  )}
                 </div>
                 <div className="flex-1">
                   <label className="block text-sm font-normal text-gray-600 mb-1">ニックネーム</label>

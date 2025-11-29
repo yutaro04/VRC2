@@ -43,5 +43,8 @@ next-env.d.ts
 # VsCode
 .vscode/
 
+# webstorm
+.idea/
+
 package-lock.json
 /src/generated/prisma

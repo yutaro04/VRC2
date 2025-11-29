@@ -2,8 +2,7 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider = "prisma-client"
-  output   = "../src/generated/prisma"
+  provider = "prisma-client-js"
 }
 
 datasource db {
@@ -16,11 +15,12 @@ datasource db {
 
 model User {
   id             Int       @id @default(autoincrement())
+  supabaseAuthId String?   @unique @map("supabase_auth_id") // Supabase Auth UIDとの紐付け
   description    String?   @db.Text // 自己紹介
   nickname       String    @unique @db.VarChar(50)
   passwordHash   String?   @map("password_hash") // Supabase Authを使うなら不要かもしれないが定義通り作成
   email          String?   @unique
-  avatarImageUrl String?   @map("avatar_image_url")
+  avatarUrl      String?   @map("avatar_url") // Google提供のアバターURL
   createdAt      DateTime  @default(now()) @map("created_at") @db.Timestamptz
   updatedAt      DateTime  @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
   deletedAt      DateTime? @map("deleted_at") @db.Timestamptz

@@ -1,5 +1,4 @@
 'use client';
-import { useRouter } from 'next/navigation';
 import { useUser } from '@/hooks/useUser';
 import { useUserUpdate } from '@/hooks/useUserUpdate';
 import { useUserForm } from '@/hooks/useUserForm';
@@ -10,7 +9,6 @@ import UserProfileForm from '@/components/features/member/UserProfileForm';
 import type { UpdateUserRequest } from '@/types/user';
 
 export default function UserEditPage() {
-  const router = useRouter();
   const { user, isLoading, error: fetchError } = useUser();
   const { updateUserData, isUpdating, error: updateError } = useUserUpdate();
   const { formData, handleInputChange } = useUserForm({ initialUser: user });
@@ -42,7 +40,9 @@ export default function UserEditPage() {
       }
 
       await updateUserData(updateData);
-      router.push('/user/profile');
+
+      // プロフィールページに遷移（リロード付き）
+      window.location.href = '/user/profile';
     } catch (err) {
       // エラーはuseUserUpdateフックで管理される
       console.error('Failed to update user:', err);

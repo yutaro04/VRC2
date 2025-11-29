@@ -4,15 +4,11 @@ import { LoadingSpinner } from '@/components/shared/LoadingSpinner';
 import { ErrorMessage } from '@/components/shared/ErrorMessage';
 import { ProfileActions } from '@/components/features/member/ProfileActions';
 import UserProfileForm from '@/components/features/member/UserProfileForm';
+import { SignOutButton } from '@/components/auth/SignOutButton';
 import type { UserFormData } from '@/types/user';
 
 export default function UserProfilePage() {
   const { user, isLoading, error } = useUser();
-
-  const handleLogout = () => {
-    // TODO: ログアウト処理を実装
-    console.log('ログアウト');
-  };
 
   if (isLoading) {
     return <LoadingSpinner />;
@@ -30,7 +26,7 @@ export default function UserProfilePage() {
     avatar_image_url: user.avatar_image_url,
   };
 
-  const { headerButton, actionButtons } = ProfileActions({ onLogout: handleLogout });
+  const { headerButton } = ProfileActions({});
 
   return (
     <UserProfileForm
@@ -38,7 +34,11 @@ export default function UserProfilePage() {
       isEditing={false}
       title="プロフィール情報"
       headerButton={headerButton}
-      actionButtons={actionButtons}
+      actionButtons={
+        <SignOutButton className="w-full px-6 py-3 bg-red-500 hover:bg-red-600 text-white font-medium rounded-lg transition-colors border-2 border-gray-900">
+          ログアウト
+        </SignOutButton>
+      }
     />
   );
 }

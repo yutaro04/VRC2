@@ -6,7 +6,12 @@
       "mcp__figma__whoami",
       "mcp__figma__get_design_context",
       "mcp__figma__get_screenshot",
-      "Bash(npm run dev:*)"
+      "Bash(npm run dev:*)",
+      "Bash(npm install:*)",
+      "Bash(npx prisma generate:*)",
+      "WebFetch(domain:zenn.dev)",
+      "Bash(kill:*)",
+      "Bash(npm run lint)"
     ],
     "deny": []
   }

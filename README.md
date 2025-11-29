@@ -35,7 +35,41 @@ cd vrchat-calender-app
 npm install
 ```
 
-### 3. 開発サーバーの起動
+### 3. 環境変数の設定
+
+`.env.example`をコピーして`.env`ファイルを作成し、必要な環境変数を設定してください。
+
+```bash
+cp .env.example .env
+```
+
+#### 必須の環境変数
+
+##### NextAuth.js
+
+- `AUTH_SECRET`: 認証用のシークレットキー（以下のコマンドで生成できます）
+  ```bash
+  openssl rand -base64 32
+  ```
+
+##### Google OAuth
+
+Google Cloud Console (https://console.cloud.google.com/apis/credentials) で OAuth 2.0 クライアント ID を作成し、以下の値を設定してください。
+
+- `GOOGLE_CLIENT_ID`: Google OAuth クライアント ID
+- `GOOGLE_CLIENT_SECRET`: Google OAuth クライアントシークレット
+
+**リダイレクト URI の設定:**
+- 開発環境: `http://localhost:3000/api/auth/callback/google`
+- 本番環境: `https://your-domain.com/api/auth/callback/google`
+
+##### その他
+
+- `NEXTAUTH_URL`: アプリケーションのベースURL
+  - 開発環境: `http://localhost:3000`
+  - 本番環境: `https://your-domain.com`
+
+### 4. 開発サーバーの起動
 
 ```bash
 npm run dev
@@ -43,7 +77,7 @@ npm run dev
 
 ブラウザで [http://localhost:3000](http://localhost:3000) を開いてください。
 
-### 4. Prisma
+### 5. Prisma
 
 prismaの利用が初めての場合
 ```bash
@@ -79,6 +113,33 @@ vrchat-calender-app/
 ├── postcss.config.mjs
 └── package.json
 ```
+
+## 🔐 認証機能
+
+このアプリケーションは NextAuth.js (Auth.js v5) を使用した Google 認証を実装しています。
+
+### 認証の仕組み
+
+- **認証ライブラリ**: NextAuth.js v5
+- **認証プロバイダー**: Google OAuth
+- **セッション管理**: JWT (JSON Web Token)
+
+### 保護されたルート
+
+以下のパスは認証が必要です。未ログイン状態でアクセスすると、自動的にログイン画面へリダイレクトされます。
+
+- `/user/*` - すべてのユーザー関連ページ
+  - `/user/profile` - プロフィールページ
+  - `/user/edit` - プロフィール編集ページ
+  - `/user/events` - ユーザーのイベント一覧
+
+### 認証の流れ
+
+1. **未ログイン状態**: ナビゲーションに「ログイン」ボタンが表示されます
+2. **ログインボタンをクリック**: `/login` ページへ遷移
+3. **Google認証**: Googleアカウントでログイン
+4. **認証成功**: ホームページへリダイレクト、ユーザー情報がナビゲーションに表示されます
+5. **ログアウト**: プロフィールページからログアウト可能
 
 ## 🎨 コーディング規約
 

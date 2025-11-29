@@ -22,7 +22,7 @@ function mapPrismaUserToUser(prismaUser: {
   nickname: string;
   description: string | null;
   email: string | null;
-  avatarImageUrl: string | null;
+  avatarUrl: string | null;
   createdAt: Date;
   updatedAt: Date;
 }): User {
@@ -31,7 +31,7 @@ function mapPrismaUserToUser(prismaUser: {
     nickname: prismaUser.nickname,
     description: prismaUser.description ?? undefined,
     email: prismaUser.email ?? undefined,
-    avatar_image_url: prismaUser.avatarImageUrl ?? undefined,
+    avatar_image_url: prismaUser.avatarUrl ?? undefined,
     created_at: prismaUser.createdAt.toISOString(),
     updated_at: prismaUser.updatedAt.toISOString(),
   };
@@ -85,14 +85,14 @@ export async function updateUserById(
     description?: string;
     email?: string;
     passwordHash?: string;
-    avatarImageUrl?: string;
+    avatarUrl?: string;
   } = {};
 
   if (data.nickname !== undefined) updateData.nickname = data.nickname;
   if (data.description !== undefined) updateData.description = data.description;
   if (data.email !== undefined) updateData.email = data.email;
   if (data.password !== undefined) updateData.passwordHash = data.password;
-  if (data.avatar_image_url !== undefined) updateData.avatarImageUrl = data.avatar_image_url;
+  if (data.avatar_image_url !== undefined) updateData.avatarUrl = data.avatar_image_url;
 
   const updatedUser = await prisma.user.update({
     where: { id: userId },

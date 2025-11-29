@@ -4,6 +4,7 @@ import "./globals.css";
 import { BackgroundPattern } from "../components/shared/BackgroundPattern";
 import HeroSection from "../components/shared/VRChatEventsLogo";
 import { FloatingNav } from "../components/shared/FloatingNav";
+import { SessionProvider } from "../components/providers/SessionProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -30,12 +31,14 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <div className="relative min-h-screen">
-          <BackgroundPattern />
-          <HeroSection />
-          <FloatingNav />
-          {children}
-        </div>
+        <SessionProvider>
+          <div className="relative min-h-screen">
+            <BackgroundPattern />
+            <HeroSection />
+            <FloatingNav />
+            {children}
+          </div>
+        </SessionProvider>
       </body>
     </html>
   );
