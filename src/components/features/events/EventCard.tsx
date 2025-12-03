@@ -1,5 +1,8 @@
+"use client";
+
 import Link from "next/link";
 import ROUTES from "../../../lib/routes";
+import { CldImage } from "next-cloudinary";
 import { Calendar, User, Monitor, Smartphone, Image as ImageIcon } from "lucide-react";
 
 interface EventCardProps {
@@ -12,7 +15,7 @@ interface EventCardProps {
   participants?: number;
 }
 
-export function EventCard({ id, title, date, organizer, device, participants }: EventCardProps) {
+export function EventCard({ id, title, date, organizer, image, device, participants }: EventCardProps) {
   const getDeviceIcon = () => {
     if (device === 'PC') return <Monitor className="w-4 h-4" />;
     if (device === 'Android') return <Smartphone className="w-4 h-4" />;
@@ -24,9 +27,21 @@ export function EventCard({ id, title, date, organizer, device, participants }: 
       <div className="relative bg-white border border-gray-900 rounded overflow-hidden transition-all hover:border-gray-600">
         {/* Image as background */}
         <div className="relative aspect-[4/5] overflow-hidden bg-gray-100">
-          <div className="w-full h-full flex items-center justify-center bg-neutral-800">
-            <ImageIcon className="w-12 h-12 text-neutral-600" />
-          </div>
+          {image ? (
+            <CldImage
+              src={image}
+              alt={title}
+              width={200}
+              height={250}
+              crop="fill"
+              gravity="auto"
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center bg-neutral-800">
+              <ImageIcon className="w-12 h-12 text-neutral-600" />
+            </div>
+          )}
           {/* Dark overlay gradient */}
           <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent" />
           
