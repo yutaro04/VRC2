@@ -20,12 +20,14 @@ export async function GET(request: NextRequest) {
     const device_id = searchParams.get('device_id');
     const limit = searchParams.get('limit');
     const offset = searchParams.get('offset');
+    const sort = searchParams.get('sort');
 
     // パラメータのバリデーション
     const parsedParams: {
       device_id?: number;
       limit?: number;
       offset?: number;
+      sort?: 'newest' | 'upcoming';
     } = {};
 
     if (device_id) {
@@ -56,6 +58,15 @@ export async function GET(request: NextRequest) {
         ]);
       }
       parsedParams.offset = offsetNum;
+    }
+
+    if (sort) {
+      if (sort !== 'newest' && sort !== 'upcoming') {
+        return validationErrorResponse([
+          { field: 'sort', message: 'sortは"newest"または"upcoming"である必要があります' },
+        ]);
+      }
+      parsedParams.sort = sort;
     }
 
     const { events, total } = await eventRepository.findEvents(parsedParams);
