@@ -1,9 +1,9 @@
 import Link from "next/link";
 import ROUTES from "../lib/routes";
 import { EventCard } from "../components/features/events/EventCard";
+import * as eventRepository from "@/repositories/eventRepository";
 
-
-interface Event {
+interface EventCardProps {
   id: string | number;
   title: string;
   date: string;
@@ -13,135 +13,53 @@ interface Event {
   participants?: number;
 }
 
-const upcomingEvents: Event[] = [
-  {
-    id: "1",
-    title: "VRChat Music Festival 2024",
-    date: "2024.12.25 20:00 JST",
-    organizer: "VRC Events Team",
-    image:
-      "https://images.unsplash.com/photo-1558905945-901dc8efd4b3?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080",
-    device: "All",
-  },
-  {
-    id: "2",
-    title: "アバター展示会 2024 Winter",
-    date: "2024.12.28 19:00 JST",
-    organizer: "Avatar Creators",
-    image:
-      "https://images.unsplash.com/photo-1721642353290-440b0ae63b9f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080",
-    device: "PC",
-  },
-  {
-    id: "3",
-    title: "New Year VR Party",
-    date: "2025.01.01 00:00 JST",
-    organizer: "VR Party Official",
-    image:
-      "https://images.unsplash.com/photo-1459550532302-ba13832edcdf?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080",
-    device: "All",
-  },
-  {
-    id: "4",
-    title: "Cyberpunk Night Club",
-    date: "2024.12.30 22:00 JST",
-    organizer: "Neon Nights",
-    image:
-      "https://images.unsplash.com/photo-1574391884720-bbc3740c59d1?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080",
-    device: "Android",
-  },
-  {
-    id: "5",
-    title: "Virtual World Meetup",
-    date: "2025.01.05 18:00 JST",
-    organizer: "VRC Community",
-    image:
-      "https://images.unsplash.com/photo-1587400520111-af8b9a6ea5ed?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080",
-    device: "All",
-  },
-  {
-    id: "6",
-    title: "Gaming Tournament Final",
-    date: "2025.01.10 20:00 JST",
-    organizer: "VR Esports",
-    image:
-      "https://images.unsplash.com/photo-1558008322-9793c57cb73b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080",
-    device: "PC",
-  },
-  {
-    id: "7",
-    title: "VRChatバーチャル花火大会",
-    date: "2025.01.15 20:00 JST",
-    organizer: "Japan VR Events",
-    image:
-      "https://images.unsplash.com/photo-1558905945-901dc8efd4b3?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080",
-    device: "All",
-  },
-  {
-    id: "8",
-    title: "クリエイター交流会 Vol.12",
-    date: "2025.01.18 19:00 JST",
-    organizer: "VRC Creator Hub",
-    image:
-      "https://images.unsplash.com/photo-1721642353290-440b0ae63b9f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080",
-    device: "All",
-  },
-];
+export default async function Home() {
+  // データベースから新着と直近開催のイベント情報を取得
+  const [upcomingData, newData] = await Promise.all([
+    eventRepository.findEvents({ sort: 'upcoming' }),
+    eventRepository.findEvents({ sort: 'newest' }),
+  ]);
 
-const newEvents: Event[] = [
-  {
-    id: 401,
-    title: "バーチャル写真撮影会 - 冬の風景",
-    date: "2025年11月19日 17:00",
-    organizer: "VR Photographers Guild",
-    image:
-      "https://images.unsplash.com/photo-1587400520111-af8b9a6ea5ed?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080",
-    participants: 125,
-    device: "All",
-  },
-  {
-    id: 402,
-    title: "VRChat謎解きゲームイベント",
-    date: "2025年11月19日 20:00",
-    organizer: "Mystery Game Masters",
-    image:
-      "https://images.unsplash.com/photo-1558008322-9793c57cb73b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080",
-    participants: 98,
-    device: "PC",
-  },
-  {
-    id: 403,
-    title: "深夜アニメ鑑賞会",
-    date: "2025年11月19日 23:00",
-    organizer: "Anime Night Crew",
-    image:
-      "https://images.unsplash.com/photo-1721642353290-440b0ae63b9f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080",
-    participants: 86,
-    device: "All",
-  },
-  {
-    id: 404,
-    title: "モーショントレーニング講座",
-    date: "2025年11月20日 19:00",
-    organizer: "Motion Capture Academy",
-    image:
-      "https://images.unsplash.com/photo-1574391884720-bbc3740c59d1?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080",
-    participants: 72,
-    device: "PC",
-  },
-  {
-    id: 405,
-    title: "Quest限定ワールド巡り",
-    date: "2025年11月20日 18:30",
-    organizer: "Quest Users Community",
-    image:
-      "https://images.unsplash.com/photo-1459550532302-ba13832edcdf?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080",
-    participants: 64,
-    device: "Android",
-  },
-];
+  // EventCardコンポーネント用にデータを変換
+  const upcomingEvents: EventCardProps[] = upcomingData.events.map((event) => {
+    const deviceName = event.device_name || '';
+    let device: "PC" | "All" | "Android" = "All";
+    
+    if (deviceName.toLowerCase().includes('pc')) {
+      device = "PC";
+    } else if (deviceName.toLowerCase().includes('quest') || deviceName.toLowerCase().includes('android')) {
+      device = "Android";
+    }
 
-export default function Home() {
+    return {
+      id: event.id,
+      title: event.title,
+      date: event.event_dates[0]?.start_date || '',
+      organizer: event.device_name || 'Unknown',
+      image: event.main_image_url,
+      device,
+    };
+  });
+
+  const newEvents: EventCardProps[] = newData.events.map((event) => {
+    const deviceName = event.device_name || '';
+    let device: "PC" | "All" | "Android" = "All";
+    
+    if (deviceName.toLowerCase().includes('pc')) {
+      device = "PC";
+    } else if (deviceName.toLowerCase().includes('quest') || deviceName.toLowerCase().includes('android')) {
+      device = "Android";
+    }
+
+    return {
+      id: event.id,
+      title: event.title,
+      date: event.event_dates[0]?.start_date || '',
+      organizer: event.device_name || 'Unknown',
+      image: event.main_image_url,
+      device,
+    };
+  });
   return (
     <div className="min-h-screen bg-transparent relative flex flex-col">
       <main className="relative z-10 flex-1 pb-24 lg:pb-0">
@@ -245,14 +163,14 @@ export default function Home() {
               <div className="mb-3 flex items-start justify-between">
                 <div>
                   <h2 className="text-gray-900 mb-1">開催予定イベント</h2>
-                  <p className="text-gray-600 text-sm">VRChatで開催されるイベント一覧</p>
+                  <p className="text-gray-600 text-sm">VRChatで近々開催されるイベント一覧</p>
                 </div>
                 <button className="px-4 py-2 bg-gray-900 text-white text-sm rounded-lg border-2 border-gray-900 hover:bg-gray-700 transition-all flex-shrink-0">もっと見る</button>
               </div>
               <div className="overflow-x-auto scrollbar-hide">
                 <div className="flex gap-2 pb-2">
-                  {upcomingEvents.map((event) => (
-                    <EventCard key={event.id} {...event} />
+                  {upcomingEvents.map((event, index) => (
+                    <EventCard key={`upcoming-${event.id}-${index}`} {...event} />
                   ))}
                 </div>
               </div>
@@ -268,8 +186,8 @@ export default function Home() {
               </div>
               <div className="overflow-x-auto scrollbar-hide">
                 <div className="flex gap-2 pb-2">
-                  {newEvents.map((event) => (
-                    <EventCard key={event.id} {...event} />
+                  {newEvents.map((event, index) => (
+                    <EventCard key={`new-${event.id}-${index}`} {...event} />
                   ))}
                 </div>
               </div>
