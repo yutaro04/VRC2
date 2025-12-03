@@ -5,6 +5,7 @@
 import { NextRequest } from 'next/server';
 import { auth } from '@/auth';
 import * as eventRepository from '@/repositories/eventRepository';
+import { ParticipantStatus } from '@/generated/prisma/client';
 import {
   successResponse,
   serverErrorResponse,
@@ -27,7 +28,8 @@ export async function GET(request: NextRequest) {
     const userId = parseInt(session.user.id, 10);
 
     const searchParams = request.nextUrl.searchParams;
-    const status = searchParams.get('status') ?? undefined;
+    const statusParam = searchParams.get('status');
+    const status = statusParam ? statusParam as ParticipantStatus : undefined;
 
     const results = await eventRepository.findEventsByUserId(userId, status);
 

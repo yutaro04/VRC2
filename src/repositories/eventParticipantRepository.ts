@@ -28,7 +28,7 @@ function mapPrismaParticipantToEventParticipant(prismaParticipant: {
  */
 export async function findParticipantsByEventId(
   eventId: number,
-  status?: string
+  status?: ParticipantStatus
 ): Promise<EventParticipant[]> {
   const where = {
     eventId,

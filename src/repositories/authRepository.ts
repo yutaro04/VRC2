@@ -22,7 +22,7 @@ function mapPrismaUserToUser(prismaUser: {
   nickname: string;
   description: string | null;
   email: string | null;
-  avatarImageUrl: string | null;
+  avatarUrl: string | null;
   createdAt: Date;
   updatedAt: Date;
 }): User {
@@ -31,7 +31,7 @@ function mapPrismaUserToUser(prismaUser: {
     nickname: prismaUser.nickname,
     description: prismaUser.description ?? undefined,
     email: prismaUser.email ?? undefined,
-    avatar_image_url: prismaUser.avatarImageUrl ?? undefined,
+    avatar_image_url: prismaUser.avatarUrl ?? undefined,
     created_at: prismaUser.createdAt.toISOString(),
     updated_at: prismaUser.updatedAt.toISOString(),
   };
@@ -57,7 +57,7 @@ export async function createUser(data: CreateUserData): Promise<User> {
       passwordHash,
       email: data.email,
       description: data.description,
-      avatarImageUrl: data.avatar_image_url,
+      avatarUrl: data.avatar_image_url,
     },
   });
 
