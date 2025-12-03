@@ -14,7 +14,7 @@ interface EventCardProps {
 }
 
 export default async function Home() {
-  // データベースからイベントを取得
+  // データベースから新着と直近開催のイベント情報を取得
   const [upcomingData, newData] = await Promise.all([
     eventRepository.findEvents({ sort: 'upcoming' }),
     eventRepository.findEvents({ sort: 'newest' }),
@@ -163,7 +163,7 @@ export default async function Home() {
               <div className="mb-3 flex items-start justify-between">
                 <div>
                   <h2 className="text-gray-900 mb-1">開催予定イベント</h2>
-                  <p className="text-gray-600 text-sm">VRChatで開催されるイベント一覧</p>
+                  <p className="text-gray-600 text-sm">VRChatで近々開催されるイベント一覧</p>
                 </div>
                 <button className="px-4 py-2 bg-gray-900 text-white text-sm rounded-lg border-2 border-gray-900 hover:bg-gray-700 transition-all flex-shrink-0">もっと見る</button>
               </div>
