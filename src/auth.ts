@@ -60,7 +60,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       // 初回サインイン時にユーザー情報とアカウント情報をトークンに追加
       if (user) {
         token.id = user.id;
-        token.email = user.email;
+        token.email = user.email ?? undefined;
       }
       if (account) {
         token.accessToken = account.access_token;
@@ -68,7 +68,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       }
       if (profile) {
         token.picture = (profile as { picture?: string }).picture;
-        token.name = profile.name;
+        token.name = profile.name ?? undefined;
       }
       return token;
     },
