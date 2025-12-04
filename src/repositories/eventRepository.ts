@@ -1,6 +1,5 @@
 import type { Event } from '@/types/event';
 import { prisma } from '@/lib/prisma';
-import { ParticipantStatus } from '@/generated/prisma/client';
 
 /**
  * Prismaのイベントオブジェクトをアプリケーション型に変換
@@ -178,7 +177,7 @@ export async function findEventById(eventId: number): Promise<Event | null> {
  */
 export async function findEventsByUserId(
   userId: number,
-  status?: ParticipantStatus
+  status?: string
 ): Promise<Array<{ event: Event; participant_status: string; participant_role: string }>> {
   const where = {
     userId,
@@ -214,4 +213,55 @@ export async function findEventsByUserId(
         participant_role: p.role,
       }))
     );
+}
+
+/**
+ * イベントを作成
+ */
+export async function createEvent(data: {
+  title: string;
+  description?: string;
+  device_id: number;
+  main_image_url: string;
+  start_date: string;
+  end_date: string;
+  max_participants_num?: number;
+  deadline?: string;
+  user_id: number;
+}): Promise<Event> {
+  const event = await prisma.event.create({
+    data: {
+      title: data.title,
+      description: data.description,
+      deviceId: data.device_id,
+      mainImageUrl: data.main_image_url,
+      maxParticipantsNum: data.max_participants_num,
+      deadline: data.deadline ? new Date(data.deadline) : null,
+      eventDates: {
+        create: {
+          startDate: new Date(data.start_date),
+          endDate: new Date(data.end_date),
+        },
+      },
+      eventParticipants: {
+        create: {
+          userId: data.user_id,
+          role: 'organizer',
+          status: 'approved',
+        },
+      },
+    },
+    include: {
+      device: true,
+      eventDates: {
+        where: { deletedAt: null },
+        orderBy: { startDate: 'asc' },
+      },
+    },
+  });
+
+  return mapPrismaEventToEvent({
+    ...event,
+    eventDates: event.eventDates[0],
+  });
 }
