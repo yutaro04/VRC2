@@ -1,5 +1,6 @@
 import type { Event } from '@/types/event';
 import { prisma } from '@/lib/prisma';
+import { participant_status } from '@prisma/client';
 
 /**
  * Prismaのイベントオブジェクトをアプリケーション型に変換
@@ -177,7 +178,7 @@ export async function findEventById(eventId: number): Promise<Event | null> {
  */
 export async function findEventsByUserId(
   userId: number,
-  status?: string
+  status?: participant_status
 ): Promise<Array<{ event: Event; participant_status: string; participant_role: string }>> {
   const where = {
     userId,
@@ -247,7 +248,7 @@ export async function createEvent(data: {
         create: {
           userId: data.user_id,
           role: 'organizer',
-          status: 'approved',
+          status: participant_status.approved,
         },
       },
     },
