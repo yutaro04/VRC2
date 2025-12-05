@@ -9,6 +9,11 @@ jobs:
   lint:
     runs-on: ubuntu-latest
 
+    env:
+      # Prisma generate requires these variables, but actual DB connection is not needed for linting
+      DATABASE_URL: "postgresql://user:password@localhost:5432/db?schema=public"
+      DIRECT_URL: "postgresql://user:password@localhost:5432/db?schema=public"
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4

@@ -1,31 +1,22 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider  = "postgresql"
+  provider = "postgresql"
 }
 
-// --------------------------------------
-// Models
-// --------------------------------------
-
 model User {
-  id             Int       @id @default(autoincrement())
-  supabaseAuthId String?   @unique @map("supabase_auth_id") // Supabase Auth UIDとの紐付け
-  description    String?   @db.Text // 自己紹介
-  nickname       String    @unique @db.VarChar(50)
-  passwordHash   String?   @map("password_hash") // Supabase Authを使うなら不要かもしれないが定義通り作成
-  email          String?   @unique
-  avatarUrl      String?   @map("avatar_url") // Google提供のアバターURL
-  createdAt      DateTime  @default(now()) @map("created_at") @db.Timestamptz
-  updatedAt      DateTime  @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
-  deletedAt      DateTime? @map("deleted_at") @db.Timestamptz
-
-  // Relations
+  id                Int                @id @default(autoincrement())
+  description       String?
+  nickname          String             @unique @db.VarChar(50)
+  passwordHash      String?            @map("password_hash")
+  email             String?            @unique
+  createdAt         DateTime           @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt         DateTime           @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+  deletedAt         DateTime?          @map("deleted_at") @db.Timestamptz(6)
+  avatarUrl         String?            @map("avatar_url")
+  supabaseAuthId    String?            @unique @map("supabase_auth_id")
   eventParticipants EventParticipant[]
 
   @@map("users")
@@ -34,32 +25,28 @@ model User {
 model Device {
   id        Int       @id @default(autoincrement())
   name      String    @db.VarChar(20)
-  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz
-  updatedAt DateTime  @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
-  deletedAt DateTime? @map("deleted_at") @db.Timestamptz
-
-  // Relations
-  events Event[]
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime  @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+  deletedAt DateTime? @map("deleted_at") @db.Timestamptz(6)
+  events    Event[]
 
   @@map("devices")
 }
 
 model Event {
-  id                 Int       @id @default(autoincrement())
-  title              String    @db.VarChar(100)
-  description        String?   @db.Text
-  deviceId           Int       @map("device_id")
-  maxParticipantsNum Int?      @map("max_participants_num")
-  mainImageUrl       String    @map("main_image_url") @db.VarChar(100)
-  deadline           DateTime? @db.Timestamptz
-  createdAt          DateTime  @default(now()) @map("created_at") @db.Timestamptz
-  updatedAt          DateTime  @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
-  deletedAt          DateTime? @map("deleted_at") @db.Timestamptz
-
-  // Relations
-  device            Device             @relation(fields: [deviceId], references: [id])
-  eventParticipants EventParticipant[]
-  eventDates        EventDate[]
+  id                 Int                @id @default(autoincrement())
+  title              String             @db.VarChar(100)
+  description        String?
+  deviceId           Int                @map("device_id")
+  maxParticipantsNum Int?               @map("max_participants_num")
+  mainImageUrl       String             @map("main_image_url") @db.VarChar(100)
+  deadline           DateTime?          @db.Timestamptz(6)
+  createdAt          DateTime           @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt          DateTime           @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+  deletedAt          DateTime?          @map("deleted_at") @db.Timestamptz(6)
+  eventDates         EventDate[]
+  eventParticipants  EventParticipant[]
+  device             Device             @relation(fields: [deviceId], references: [id])
 
   @@map("events")
 }
@@ -67,45 +54,34 @@ model Event {
 model EventDate {
   id        Int       @id @default(autoincrement())
   eventId   Int       @map("event_id")
-  startDate DateTime  @map("start_date") @db.Timestamptz
-  endDate   DateTime  @map("end_date") @db.Timestamptz
-  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz
-  updatedAt DateTime  @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
-  deletedAt DateTime? @map("deleted_at") @db.Timestamptz
-
-  // Relations
-  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  startDate DateTime  @map("start_date") @db.Timestamptz(6)
+  endDate   DateTime  @map("end_date") @db.Timestamptz(6)
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime  @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+  deletedAt DateTime? @map("deleted_at") @db.Timestamptz(6)
+  event     Event     @relation(fields: [eventId], references: [id], onDelete: Cascade)
 
   @@map("event_date")
 }
 
 model EventParticipant {
-  id        Int               @id @default(autoincrement())
-  eventId   Int               @map("event_id")
-  userId    Int               @map("user_id")
-  role      String            @db.VarChar(20)
-  status    ParticipantStatus @default(PENDING)
-  appliedAt DateTime?         @default(now()) @map("applied_at") @db.Timestamptz
-  deletedAt DateTime?         @map("deleted_at") @db.Timestamptz
+  id        Int                @id @default(autoincrement())
+  eventId   Int                @map("event_id")
+  userId    Int                @map("user_id")
+  role      String             @db.VarChar(20)
+  status    participant_status @default(pending)
+  appliedAt DateTime?          @default(now()) @map("applied_at") @db.Timestamptz(6)
+  deletedAt DateTime?          @map("deleted_at") @db.Timestamptz(6)
+  event     Event              @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  user      User               @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  // Relations
-  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
-  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  // インデックス: 同じユーザーが同じイベントに重複申請できないようにする
   @@unique([eventId, userId])
   @@map("event_participants")
 }
 
-// --------------------------------------
-// Enums
-// --------------------------------------
-
-enum ParticipantStatus {
-  PENDING   @map("pending")
-  APPROVED  @map("approved")
-  REJECTED  @map("rejected")
-  CANCELLED @map("cancelled")
-
-  @@map("participant_status") // もしDB側でEnum型を作成する場合の名前
+enum participant_status {
+  pending
+  approved
+  rejected
+  cancelled
 }

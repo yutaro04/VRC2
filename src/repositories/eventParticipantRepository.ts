@@ -1,6 +1,6 @@
 import type { EventParticipant } from '@/types/event';
 import { prisma } from '@/lib/prisma';
-import { ParticipantStatus } from '@/generated/prisma/client';
+import { participant_status } from '@prisma/client';
 
 /**
  * Prismaの参加者オブジェクトをアプリケーション型に変換
@@ -28,7 +28,7 @@ function mapPrismaParticipantToEventParticipant(prismaParticipant: {
  */
 export async function findParticipantsByEventId(
   eventId: number,
-  status?: ParticipantStatus
+  status?: participant_status
 ): Promise<EventParticipant[]> {
   const where = {
     eventId,
@@ -57,7 +57,7 @@ export async function createParticipant(
       eventId,
       userId,
       role,
-      status: ParticipantStatus.PENDING,
+      status: participant_status.pending,
     },
   });
 
@@ -112,7 +112,7 @@ export async function countApprovedParticipants(eventId: number): Promise<number
   return await prisma.eventParticipant.count({
     where: {
       eventId,
-      status: ParticipantStatus.APPROVED,
+      status: participant_status.approved,
       deletedAt: null,
     },
   });
