@@ -1,6 +1,17 @@
 import NextAuth from "next-auth";
 import Google from "next-auth/providers/google";
+import Discord from "next-auth/providers/discord";
 import { prisma } from "@/lib/prisma";
+
+// OAuth プロバイダから来る profile の共通形を定義
+type OAuthProfile = {
+  email?: string;
+  name?: string;
+  picture?: string;
+  username?: string;
+  id?: string;
+  avatar?: string;
+};
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   secret: process.env.AUTH_SECRET,
@@ -16,44 +27,73 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         },
       },
     }),
+    Discord({
+      clientId: process.env.DISCORD_CLIENT_ID,
+      clientSecret: process.env.DISCORD_CLIENT_SECRET,
+      authorization: {
+        params: {
+          scope: "identify email",
+        },
+      },
+    }),
   ],
   pages: {
+    
     signIn: "/login",
   },
   callbacks: {
     async signIn({ user, account, profile }) {
-      if (account?.provider === "google" && profile?.email) {
+      // Google / Discord 両方のプロバイダで DB と同期する
+      const provider = account?.provider;
+      const profileObj = profile as OAuthProfile | undefined;
+      const email = profileObj?.email as string | undefined;
+
+      if ((provider === "google" || provider === "discord") && email) {
         try {
-          // 既存ユーザーをチェック
           const existingUser = await prisma.user.findUnique({
-            where: { email: profile.email },
+            where: { email },
           });
 
           let dbUser;
 
           if (existingUser) {
-            // 既存ユーザーの場合は更新しない（ログインのみ）
             dbUser = existingUser;
           } else {
-            // 新規ユーザーの場合のみ作成
+            // provider ごとにニックネーム / アバター候補を決定
+            const nickname = profileObj?.name || profileObj?.username || email.split("@")[0];
+
+            let avatarUrl: string | null = null;
+            if (provider === "google") {
+              avatarUrl = profileObj?.picture || null;
+            } else if (provider === "discord") {
+              // Discord の場合、アバターは id と avatar ハッシュから生成可能
+              if (profileObj?.id && profileObj?.avatar) {
+                const ext = profileObj.avatar.startsWith("a_") ? "gif" : "png";
+                avatarUrl = `https://cdn.discordapp.com/avatars/${profileObj.id}/${profileObj.avatar}.${ext}`;
+              } else {
+                avatarUrl = null;
+              }
+            }
+
             dbUser = await prisma.user.create({
               data: {
-                email: profile.email,
-                nickname: profile.name || profile.email.split("@")[0],
-                avatarUrl: (profile as { picture?: string }).picture || null,
+                email,
+                nickname,
+                avatarUrl,
               },
             });
           }
 
-          // NextAuthのユーザーIDにDBのIDをセット
-          user.id = dbUser.id.toString();
-
+          // NextAuth の user オブジェクトに DB の ID をセット
+          // 型は string に変換して代入
+          (user as { id?: string }).id = dbUser.id.toString();
           return true;
         } catch (error) {
           console.error("Error syncing user to database:", error);
           return false;
         }
       }
+
       return true;
     },
     async jwt({ token, user, account, profile }) {

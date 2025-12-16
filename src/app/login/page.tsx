@@ -2,6 +2,7 @@ import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import { SignInButton } from "@/components/auth/SignInButton";
 import ROUTES from "@/lib/routes";
+import { SignInDiscordButton } from "@/components/auth/SignInDiscordButton";
 
 export default async function LoginPage() {
   const session = await auth();
@@ -26,7 +27,7 @@ export default async function LoginPage() {
 
           <div className="space-y-4">
             <SignInButton />
-
+            <SignInDiscordButton />
             <div className="text-center text-sm text-gray-500 mt-6">
               ログインすることで、利用規約とプライバシーポリシーに同意したものとみなされます。
             </div>
